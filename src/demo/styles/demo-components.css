@@ -1011,6 +1011,226 @@
 }
 
 /* ----------------------------------------------------------------------------
+ * AccountRequiredDialog (PRD §2.7)
+ * -------------------------------------------------------------------------- */
+.account-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 24px;
+  animation: fade-in 0.18s ease-out;
+}
+.account-dialog {
+  background: var(--d-bg);
+  border-radius: var(--d-radius-xl);
+  max-width: 480px;
+  width: 100%;
+  padding: 28px 32px 24px;
+  box-shadow: var(--d-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  animation: scale-in 0.22s var(--ease-out, ease-out);
+}
+.account-dialog-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--d-border);
+  color: var(--d-text-subtle);
+  font-size: 12px;
+  cursor: pointer;
+}
+.account-dialog-close:hover {
+  background: var(--d-surface);
+  color: var(--d-text);
+}
+.account-dialog-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+.account-dialog-title {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--d-text);
+  margin: 0;
+}
+.account-dialog-paragraph {
+  font-size: 14px;
+  color: var(--d-text-muted);
+  line-height: 1.55;
+}
+.account-dialog-perks {
+  list-style: none;
+  margin: 4px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--d-text);
+}
+.account-dialog-perks li::before {
+  content: "·";
+  font-weight: 700;
+  color: var(--d-navy);
+  margin-right: 8px;
+}
+.account-dialog-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.account-dialog-dismiss {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--d-text-subtle);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: var(--d-font);
+}
+.account-dialog-dismiss:hover {
+  color: var(--d-text);
+  text-decoration: underline;
+}
+
+/* ----------------------------------------------------------------------------
+ * ExitIntentModal (PRD §3.5)
+ * -------------------------------------------------------------------------- */
+.exit-intent-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 24px;
+  animation: fade-in 0.2s ease-out;
+}
+.exit-intent-modal {
+  background: var(--d-bg);
+  border-radius: var(--d-radius-xl);
+  max-width: 440px;
+  width: 100%;
+  padding: 28px 32px;
+  box-shadow: var(--d-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+  animation: scale-in 0.22s var(--ease-out, ease-out);
+}
+.exit-intent-title {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--d-text);
+  margin: 0;
+}
+.exit-intent-paragraph {
+  font-size: 14px;
+  color: var(--d-text-muted);
+  line-height: 1.55;
+}
+.exit-intent-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.exit-intent-secondary {
+  font-family: var(--d-font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--d-navy);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.exit-intent-secondary:hover {
+  text-decoration: underline;
+}
+.exit-intent-dismiss {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--d-text-subtle);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-top: 4px;
+  font-family: var(--d-font);
+}
+.exit-intent-dismiss:hover {
+  color: var(--d-text);
+  text-decoration: underline;
+}
+
+/* ----------------------------------------------------------------------------
+ * SandboxProper (PRD §2.7 / §2.8)
+ * -------------------------------------------------------------------------- */
+.sandbox-proper {
+  gap: 22px;
+}
+.sandbox-helper {
+  font-size: 13px;
+  color: var(--d-text-subtle);
+  margin-top: 8px;
+  line-height: 1.55;
+}
+.sandbox-helper em {
+  color: var(--d-text-muted);
+  font-style: italic;
+}
+.sandbox-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 56px 24px;
+  background: var(--d-surface);
+  border: 1px dashed var(--d-border-strong);
+  border-radius: var(--d-radius-lg);
+  color: var(--d-text-muted);
+}
+.sandbox-empty-state-mark {
+  font-size: 32px;
+  color: var(--d-navy);
+  opacity: 0.5;
+}
+.sandbox-empty-state-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--d-text);
+}
+.sandbox-empty-state-desc {
+  font-size: 13px;
+  max-width: 44ch;
+  line-height: 1.55;
+}
+
+/* ----------------------------------------------------------------------------
  * Floating exit-to-landing link
  * -------------------------------------------------------------------------- */
 .demo-exit-link {

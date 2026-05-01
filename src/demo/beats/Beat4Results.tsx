@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { track } from "../../lib/analytics";
 import type { BeatPersonaCopy } from "../data/beats";
 import { RESULTS, type DemoEvent, type Severity } from "../data/results";
 
@@ -8,6 +9,8 @@ interface Beat4ResultsProps {
   onPersonaSwitch: (id: BeatPersonaCopy["id"]) => void;
   /** Other personas the user can pivot to */
   allPersonas: BeatPersonaCopy[];
+  /** Triggered by Modify / Share / export actions; opens AccountRequiredDialog */
+  onPrivilegedAction: (action: string) => void;
 }
 
 const SEV_CLASS: Record<Severity, string> = {
@@ -19,20 +22,31 @@ const SEV_CLASS: Record<Severity, string> = {
 /**
  * PRD §2.6 — Persistent value banner at top, collapsible (× icon) but
  * does NOT auto-dismiss. Below: industry tabs (sandbox-unlock pattern
- * §2.7) + the event list. Each event has thumbnail, title, reasoning,
- * timestamp, severity badge, confidence, and Accept/Reject/Modify
- * buttons (placeholder — Slice 3 wires real interactions).
+ * §2.7) + the event list. PRD §4.1 events:
+ *   demo_value_banner_seen → fires once after the banner has been
+ *   visible for ≥1s
+ *   pilot_event_reviewed → fires on each Accept/Reject
+ *   pilot_results_shared → fires on Share results
  */
 export function Beat4Results({
   copy,
   onPersonaSwitch,
   allPersonas,
+  onPrivilegedAction,
 }: Beat4ResultsProps): JSX.Element {
   const [bannerCollapsed, setBannerCollapsed] = useState(false);
   const [acceptedIds, setAcceptedIds] = useState<Set<string>>(new Set());
   const [rejectedIds, setRejectedIds] = useState<Set<string>>(new Set());
 
   const events = RESULTS[copy.id];
+
+  // PRD §4.1 demo_value_banner_seen — fires once persona, after 1s.
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      track("demo_value_banner_seen", { persona: copy.id });
+    }, 1000);
+    return () => window.clearTimeout(id);
+  }, [copy.id]);
 
   const handleAccept = (e: DemoEvent): void => {
     setRejectedIds((prev) => {
@@ -41,6 +55,7 @@ export function Beat4Results({
       return next;
     });
     setAcceptedIds((prev) => new Set(prev).add(e.id));
+    track("pilot_event_reviewed", { decision: "accept" });
   };
   const handleReject = (e: DemoEvent): void => {
     setAcceptedIds((prev) => {
@@ -49,6 +64,15 @@ export function Beat4Results({
       return next;
     });
     setRejectedIds((prev) => new Set(prev).add(e.id));
+    track("pilot_event_reviewed", { decision: "reject" });
+  };
+  const handleModify = (): void => {
+    track("pilot_event_reviewed", { decision: "modify" });
+    onPrivilegedAction("Modify event");
+  };
+  const handleShare = (): void => {
+    track("pilot_results_shared", {});
+    onPrivilegedAction("Share results");
   };
 
   return (
@@ -109,7 +133,11 @@ export function Beat4Results({
           <span className="beat4-review-counter">
             {acceptedIds.size + rejectedIds.size} / {events.length} reviewed
           </span>
-          <button type="button" className="d-btn d-btn--ghost">
+          <button
+            type="button"
+            className="d-btn d-btn--ghost"
+            onClick={handleShare}
+          >
             Share results
           </button>
         </div>
@@ -169,6 +197,7 @@ export function Beat4Results({
                   <button
                     type="button"
                     className="beat4-decision beat4-decision--modify"
+                    onClick={handleModify}
                   >
                     Modify…
                   </button>

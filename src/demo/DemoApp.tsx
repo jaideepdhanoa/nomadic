@@ -1,5 +1,11 @@
-import { useState } from "react";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import {
+  useNavigate,
+  useParams,
+  useSearchParams,
+  Navigate,
+} from "react-router-dom";
+import { track } from "../lib/analytics";
 import {
   BEATS,
   isDemoPersonaId,
@@ -12,8 +18,10 @@ import { Beat3NarrationSidebar } from "./beats/Beat3NarrationSidebar";
 import { Beat4Results } from "./beats/Beat4Results";
 import { DemoSidebar } from "./layout/DemoSidebar";
 import { DemoTopbar } from "./layout/DemoTopbar";
+import { AccountRequiredDialog } from "./sandbox/AccountRequiredDialog";
+import { ExitIntentModal } from "./sandbox/ExitIntentModal";
 import { SandboxFooter } from "./sandbox/SandboxFooter";
-import { SandboxStub } from "./sandbox/SandboxStub";
+import { SandboxProper } from "./sandbox/SandboxProper";
 import "./styles/demo-tokens.css";
 import "./styles/demo-components.css";
 
@@ -25,48 +33,94 @@ const ALL_PERSONAS: BeatPersonaCopy[] = [
   BEATS.construction,
 ];
 
-/**
- * Slice 2 — full Beat 1 → 2 → 3 → 4 → sandbox phase machine.
- *
- * URL params (PRD §2.2):
- *   /demo/:persona              → start at Beat 1, persona-aware
- *   /demo/:persona?path=foo     → reserved for variant guided paths
- *   /demo                       → no params; redirect to AV for now
- *
- * Persona switch from Beat 4 industry tabs replays the prior persona's
- * Beat 4 (no re-trigger of the Beat 1 modal).
- */
+const EXIT_INTENT_KEY = "nomadic_exit_intent_shown";
+
 export function DemoApp(): JSX.Element {
   const { persona } = useParams<{ persona?: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
   const [activePersona, setActivePersona] = useState<DemoPersonaId>(
     isDemoPersonaId(persona ?? "") ? (persona as DemoPersonaId) : "av"
   );
   const [phase, setPhase] = useState<Phase>("beat1");
   const [reasoningCollapsed, setReasoningCollapsed] = useState(false);
+  const [accountAction, setAccountAction] = useState<string | null>(null);
+  const [exitIntentOpen, setExitIntentOpen] = useState(false);
+  const [beat4Seen, setBeat4Seen] = useState(false);
 
-  if (!persona) {
-    return <Navigate to="/demo/av" replace />;
-  }
-  if (!isDemoPersonaId(persona)) {
-    return <Navigate to="/demo/av" replace />;
-  }
+  const guidedStartedRef = useRef(false);
+  const path = searchParams.get("path") ?? "default";
+
+  // Fire demo_guided_started once per session-entry.
+  useEffect(() => {
+    if (phase !== "beat1") return;
+    if (guidedStartedRef.current) return;
+    guidedStartedRef.current = true;
+    track("demo_guided_started", { persona: activePersona, path });
+  }, [phase, activePersona, path]);
+
+  // Beat 4 → set the flag that gates exit-intent.
+  useEffect(() => {
+    if (phase === "beat4" && !beat4Seen) {
+      setBeat4Seen(true);
+    }
+  }, [phase, beat4Seen]);
+
+  // Exit-intent: cursor leaving viewport top, after Beat 4, once per session.
+  useEffect(() => {
+    if (!beat4Seen) return undefined;
+    if (typeof window === "undefined") return undefined;
+    if (window.sessionStorage.getItem(EXIT_INTENT_KEY) === "1")
+      return undefined;
+    const onLeave = (e: MouseEvent): void => {
+      // clientY <= 0 means cursor crossed the top edge of the viewport.
+      if (e.clientY <= 0) {
+        window.sessionStorage.setItem(EXIT_INTENT_KEY, "1");
+        setExitIntentOpen(true);
+      }
+    };
+    document.addEventListener("mouseleave", onLeave);
+    return () => document.removeEventListener("mouseleave", onLeave);
+  }, [beat4Seen]);
+
+  if (!persona) return <Navigate to="/demo/av" replace />;
+  if (!isDemoPersonaId(persona)) return <Navigate to="/demo/av" replace />;
 
   const copy = BEATS[activePersona];
 
   const handleBeat1Run = (): void => setPhase("beat2");
-  const handleBeat2Run = (_queryWasEdited: boolean): void => setPhase("beat3");
-  const handleBeat3Complete = (): void => {
-    setPhase("beat4");
-    setReasoningCollapsed(true); // Collapse reasoning panel into compact dock.
+  const handleBeat2Run = (queryWasEdited: boolean): void => {
+    track("demo_beat2_run_clicked", {
+      persona: activePersona,
+      query_was_edited: queryWasEdited,
+    });
+    setPhase("beat3");
   };
-  const handleSkipToSandbox = (): void => setPhase("sandbox");
+  const handleBeat3Complete = (): void => {
+    track("demo_beat3_completed", {
+      persona: activePersona,
+      duration_ms: 12000, // approximate; real timer in Beat3 component
+    });
+    setPhase("beat4");
+    setReasoningCollapsed(true);
+  };
+  const handleSkipToSandbox = (): void => {
+    if (phase === "beat1") {
+      track("demo_beat1_dismissed", { persona: activePersona });
+    }
+    setPhase("sandbox");
+  };
   const handlePersonaSwitch = (id: DemoPersonaId): void => {
+    if (id === activePersona) return;
+    track("demo_industry_tab_switched", {
+      from_persona: activePersona,
+      to_persona: id,
+    });
     setActivePersona(id);
-    // Stay on Beat 4 with the new persona's results.
   };
 
-  const showCompactReasoning = phase === "beat4" || phase === "sandbox";
+  const showCompactReasoning = phase === "beat4";
 
   return (
     <div className="demo-app">
@@ -90,20 +144,25 @@ export function DemoApp(): JSX.Element {
                 />
               ) : null}
 
-              {phase === "beat3" ? (
-                <Beat3RunningSurface copy={copy} />
-              ) : null}
+              {phase === "beat3" ? <Beat3RunningSurface copy={copy} /> : null}
 
               {phase === "beat4" ? (
                 <Beat4Results
                   copy={copy}
                   allPersonas={ALL_PERSONAS}
                   onPersonaSwitch={handlePersonaSwitch}
+                  onPrivilegedAction={(action) => setAccountAction(action)}
                 />
               ) : null}
 
               {phase === "sandbox" ? (
-                <SandboxStub copy={copy} reminder />
+                <SandboxProper
+                  copy={copy}
+                  allPersonas={ALL_PERSONAS}
+                  onPersonaSwitch={handlePersonaSwitch}
+                  onPrivilegedAction={(action) => setAccountAction(action)}
+                  reminder
+                />
               ) : null}
             </div>
 
@@ -120,9 +179,7 @@ export function DemoApp(): JSX.Element {
                 onComplete={() => undefined}
                 compact
                 collapsed={reasoningCollapsed}
-                onToggleCollapse={() =>
-                  setReasoningCollapsed((c) => !c)
-                }
+                onToggleCollapse={() => setReasoningCollapsed((c) => !c)}
               />
             ) : null}
           </div>
@@ -138,6 +195,20 @@ export function DemoApp(): JSX.Element {
         />
       ) : null}
 
+      {accountAction ? (
+        <AccountRequiredDialog
+          action={accountAction}
+          onClose={() => setAccountAction(null)}
+        />
+      ) : null}
+
+      {exitIntentOpen ? (
+        <ExitIntentModal
+          persona={activePersona}
+          onClose={() => setExitIntentOpen(false)}
+        />
+      ) : null}
+
       <button
         type="button"
         onClick={() => navigate("/")}
@@ -150,11 +221,6 @@ export function DemoApp(): JSX.Element {
   );
 }
 
-/**
- * Beat 3's main-stage view: dimmed processing area while the narration
- * sidebar streams. PRD §2.5 just says "main content area shows a
- * processing state" — keep it minimal.
- */
 function Beat3RunningSurface({
   copy,
 }: {

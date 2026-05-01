@@ -1,0 +1,726 @@
+/* ----------------------------------------------------------------------------
+ * Pilot wizard + Round 1/2 results dashboard.
+ * Scoped under .demo-app so it inherits the demo's white + #1a2332 +
+ * Inter design system.
+ * -------------------------------------------------------------------------- */
+
+.pilot-page,
+.pilot-results-page {
+  min-height: 100vh;
+  background: var(--d-bg);
+  color: var(--d-text);
+  font-family: var(--d-font);
+}
+
+.pilot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 32px;
+  border-bottom: 1px solid var(--d-border);
+  background: var(--d-bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.pilot-header-brand img {
+  height: 22px;
+  width: auto;
+}
+.pilot-progress {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.pilot-progress-dot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--d-text-subtle);
+  position: relative;
+}
+.pilot-progress-dot span {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--d-surface);
+  border: 1.5px solid var(--d-border-strong);
+  color: var(--d-text-subtle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+}
+.pilot-progress-dot em {
+  font-style: normal;
+  font-weight: 500;
+}
+.pilot-progress-dot.is-current span {
+  background: var(--d-navy);
+  border-color: var(--d-navy);
+  color: #ffffff;
+}
+.pilot-progress-dot.is-current em {
+  color: var(--d-text);
+}
+.pilot-progress-dot.is-done span {
+  background: var(--d-success);
+  border-color: var(--d-success);
+  color: #ffffff;
+}
+
+.pilot-shell,
+.pilot-results-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 32px 120px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 48px;
+}
+.pilot-results-shell {
+  grid-template-columns: 1fr;
+  padding-bottom: 140px;
+}
+@media (max-width: 1024px) {
+  .pilot-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pilot-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.pilot-main section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.pilot-h1 {
+  font-size: 30px;
+  line-height: 1.2;
+  letter-spacing: -0.4px;
+  font-weight: 600;
+  color: var(--d-text);
+  margin: 0;
+}
+.pilot-sub {
+  font-size: 15px;
+  color: var(--d-text-muted);
+  line-height: 1.6;
+  max-width: 60ch;
+  margin: 0;
+}
+
+/* Step 1 — Scenario cards */
+.pilot-scenarios {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (max-width: 720px) {
+  .pilot-scenarios {
+    grid-template-columns: 1fr;
+  }
+}
+.pilot-scenario-card {
+  background: var(--d-bg);
+  border: 1px solid var(--d-border);
+  border-radius: var(--d-radius-lg);
+  padding: 18px 20px;
+  text-align: left;
+  font-family: var(--d-font);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pilot-scenario-card:hover {
+  border-color: var(--d-border-strong);
+}
+.pilot-scenario-card.is-selected {
+  border-color: var(--d-navy);
+  border-width: 2px;
+  padding: 17px 19px;
+  background: var(--d-navy-soft);
+}
+.pilot-scenario-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--d-text);
+}
+.pilot-scenario-desc {
+  font-size: 13px;
+  color: var(--d-text-muted);
+}
+.pilot-other-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--d-border);
+  border-radius: var(--d-radius-md);
+  font-family: var(--d-font);
+  font-size: 14px;
+  color: var(--d-text);
+  resize: vertical;
+}
+
+/* Step 2 — Upload */
+.pilot-upload-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .pilot-upload-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.pilot-uploader {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pilot-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 36px 24px;
+  border: 1.5px dashed var(--d-border-strong);
+  border-radius: var(--d-radius-lg);
+  background: var(--d-surface);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.pilot-drop:hover {
+  border-color: var(--d-navy);
+  background: var(--d-navy-soft);
+}
+.pilot-drop-icon {
+  font-size: 22px;
+  color: var(--d-navy);
+}
+.pilot-drop-headline {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--d-text);
+}
+.pilot-drop-meta {
+  font-size: 12px;
+  color: var(--d-text-subtle);
+}
+.pilot-drop-input {
+  display: none;
+}
+.pilot-sample-btn {
+  align-self: flex-start;
+  font-size: 13px;
+  color: var(--d-navy);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+}
+.pilot-sample-btn:hover {
+  text-decoration: underline;
+}
+.pilot-clip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pilot-clip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--d-surface);
+  border: 1px solid var(--d-border);
+  border-radius: var(--d-radius-md);
+}
+.pilot-clip-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--d-text);
+  font-family: var(--d-font-mono);
+}
+.pilot-clip-meta {
+  font-size: 11px;
+  color: var(--d-text-subtle);
+  margin-top: 2px;
+}
+.pilot-clip-warning {
+  font-size: 11px;
+  color: var(--d-warning);
+  margin-top: 2px;
+}
+.pilot-clip-remove {
+  background: none;
+  border: 1px solid var(--d-border);
+  border-radius: 999px;
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+  color: var(--d-text-subtle);
+  cursor: pointer;
+}
+.pilot-clip-remove:hover {
+  border-color: var(--d-error);
+  color: var(--d-error);
+}
+.pilot-clip-counter {
+  font-size: 12px;
+  color: var(--d-text-subtle);
+  padding-top: 4px;
+}
+
+.pilot-format-trap {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: var(--d-radius-lg);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pilot-format-trap-head {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--d-text);
+}
+.pilot-format-trap-body {
+  font-size: 13px;
+  color: var(--d-text-muted);
+  line-height: 1.5;
+}
+.pilot-format-trap-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.pilot-security {
+  background: var(--d-surface);
+  border: 1px solid var(--d-border);
+  border-radius: var(--d-radius-lg);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: sticky;
+  top: 80px;
+}
+.pilot-security h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--d-text);
+  margin: 0;
+}
+.pilot-security ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--d-text-muted);
+  line-height: 1.5;
+}
+.pilot-security ul li::before {
+  content: "·";
+  font-weight: 700;
+  color: var(--d-navy);
+  margin-right: 8px;
+}
+.pilot-security-link {
+  font-size: 12px;
+  color: var(--d-navy);
+  font-weight: 500;
+  text-decoration: none;
+  margin-top: 4px;
+}
+.pilot-security-link:hover {
+  text-decoration: underline;
+}
+
+/* Step 3 — Prompts */
+.pilot-prompts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pilot-prompt-card {
+  background: var(--d-bg);
+  border: 1px solid var(--d-border);
+  border-radius: var(--d-radius-lg);
+  padding: 14px 18px;
+  text-align: left;
+  font-family: var(--d-font);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pilot-prompt-card:hover {
+  border-color: var(--d-border-strong);
+}
+.pilot-prompt-card.is-selected {
+  border-color: var(--d-navy);
+  border-width: 2px;
+  padding: 13px 17px;
+  background: var(--d-navy-soft);
+}
+.pilot-prompt-tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--d-text-subtle);
+}
+.pilot-prompt-text {
+  font-size: 14px;
+  color: var(--d-text);
+  line-height: 1.5;
+}
+.pilot-prompt-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--d-border);
+  border-radius: var(--d-radius-md);
+  font-family: var(--d-font);
+  font-size: 14px;
+  color: var(--d-text);
+  line-height: 1.5;
+  resize: vertical;
+}
+
+/* Step 4 — Confirmation timeline */
+.pilot-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-left: 2px solid var(--d-border);
+  padding-left: 24px;
+}
+.pilot-timeline li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 20px;
+}
+.pilot-timeline li::before {
+  content: "";
+  position: absolute;
+  left: -33px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--d-navy);
+  border: 2px solid var(--d-bg);
+  box-shadow: 0 0 0 1px var(--d-border);
+}
+.pilot-timeline-when {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--d-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-top: 2px;
+}
+.pilot-timeline-what {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pilot-timeline-what strong {
+  font-size: 14px;
+  color: var(--d-text);
+  font-weight: 600;
+}
+.pilot-timeline-what span {
+  font-size: 13px;
+  color: var(--d-text-muted);
+  line-height: 1.5;
+}
+
+.pilot-meta-card {
+  background: var(--d-surface);
+  border: 1px solid var(--d-border);
+  border-radius: var(--d-radius-md);
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--d-text);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pilot-meta-card-meta {
+  font-size: 12px;
+  color: var(--d-text-muted);
+}
+
+.pilot-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+/* Pilot ladder sidebar */
+.pilot-ladder {
+  background: var(--d-surface);
+  border: 1px solid var(--d-border);
+  border-radius: var(--d-radius-lg);
+  padding: 24px 22px;
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.pilot-ladder-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--d-text-subtle);
+  margin: 0;
+}
+.pilot-ladder-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-left: 2px solid var(--d-border);
+  padding-left: 18px;
+}
+.pilot-ladder-rung {
+  position: relative;
+  padding: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pilot-ladder-rung::before {
+  content: "";
+  position: absolute;
+  left: -25px;
+  top: 16px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--d-bg);
+  border: 2px solid var(--d-border-strong);
+}
+.pilot-ladder-rung--current::before {
+  background: var(--d-navy);
+  border-color: var(--d-navy);
+  box-shadow: 0 0 0 4px rgba(26, 35, 50, 0.1);
+}
+.pilot-ladder-rung-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--d-text-subtle);
+}
+.pilot-ladder-rung--current .pilot-ladder-rung-tag {
+  color: var(--d-navy);
+}
+.pilot-ladder-rung-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--d-text);
+}
+.pilot-ladder-rung ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  color: var(--d-text-muted);
+  line-height: 1.55;
+}
+.pilot-ladder-rung ul li::before {
+  content: "·";
+  font-weight: 700;
+  color: var(--d-text-subtle);
+  margin-right: 6px;
+}
+.pilot-ladder-cta {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--d-navy);
+  text-decoration: none;
+  padding-top: 8px;
+  border-top: 1px solid var(--d-border);
+  margin-top: 4px;
+}
+.pilot-ladder-cta:hover {
+  text-decoration: underline;
+}
+
+/* Pilot results dashboard */
+.pilot-results-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--d-text-muted);
+}
+.pilot-results-id code {
+  font-family: var(--d-font-mono);
+  background: var(--d-surface);
+  border: 1px solid var(--d-border);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.pilot-results-persona {
+  color: var(--d-text-subtle);
+}
+.pilot-results-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px;
+  background: var(--d-surface);
+  border: 1px solid var(--d-border);
+  border-radius: var(--d-radius-lg);
+}
+.pilot-results-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pilot-results-progress-head h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--d-text);
+}
+.pilot-results-progress-pill {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--d-navy-soft);
+  color: var(--d-navy);
+}
+.pilot-results-progress-bar {
+  display: flex;
+  gap: 12px;
+}
+.pilot-results-progress-rung {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--d-border);
+  border-radius: var(--d-radius-md);
+  background: var(--d-bg);
+  font-size: 13px;
+  color: var(--d-text-muted);
+}
+.pilot-results-progress-rung .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--d-border-strong);
+}
+.pilot-results-progress-rung--done {
+  border-color: var(--d-success);
+  color: var(--d-text);
+  font-weight: 500;
+}
+.pilot-results-progress-rung--done .dot {
+  background: var(--d-success);
+}
+.pilot-results-banner {
+  /* Inherit everything from .beat4-banner — slight tweak for dashboard density. */
+  margin: 0;
+}
+.pilot-results-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+.pilot-results-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--d-text-muted);
+}
+.pilot-results-r2-status {
+  font-size: 12px;
+  color: var(--d-text-subtle);
+  padding: 6px 0 0;
+}
+.pilot-results-footer {
+  position: sticky;
+  bottom: 0;
+  background: var(--d-bg);
+  border-top: 1px solid var(--d-border);
+  box-shadow: 0 -4px 16px rgba(10, 10, 10, 0.04);
+  z-index: 10;
+}
+.pilot-results-footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 32px;
+  flex-wrap: wrap;
+}
+.pilot-results-footer-prompt {
+  font-size: 14px;
+  color: var(--d-text);
+  font-weight: 500;
+}
+.pilot-results-footer-prompt strong {
+  color: var(--d-navy);
+  font-weight: 700;
+}
+.pilot-results-footer-meta {
+  font-size: 12px;
+  color: var(--d-text-subtle);
+  margin-top: 4px;
+}
+.pilot-results-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
