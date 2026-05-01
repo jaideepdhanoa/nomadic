@@ -1,0 +1,148 @@
+/* Design tokens — verbatim from production index.css and PRD §1.11. */
+:root {
+  /* Cream palette (backgrounds) */
+  --cream: #f9f5eb;
+  --cream-warm: #faf6ee;
+  --cream-light: #fff9f1;
+  --cream-lighter: #fefbf5;
+  --cream-bg: #fff7ec;
+  --cream-muted: #f5f1e8;
+  --cream-accent: #f0ebe0;
+  --cream-dark: #edeae4;
+  --cream-darkest: #ceccc9;
+
+  /* Navy palette (primary brand + text) */
+  --navy: #1f2753;
+  --navy-dark: #1b2249;
+  --navy-darker: #111323;
+  --navy-light: #28315f;
+  --navy-muted: #3a4472;
+  --navy-subtle: #4d5580;
+
+  /* Navy-gray (muted text) */
+  --gray-navy-dark: #5a5d70;
+  --gray-navy-medium: #7a7d8e;
+  --gray-navy-light: #9a9dac;
+
+  --white: #ffffff;
+  --black: #0a0b0e;
+
+  /* Accents (used sparingly) */
+  --accent-gold: #c9a857;
+  --accent-gold-light: #dfc477;
+  --accent-blue: #4a7dc4;
+
+  /* Semantic colors */
+  --success: #2d7a5f;
+  --warning: #c4924a;
+  --error: #b54a4a;
+  --info: #4a7dc4;
+
+  /* Type families */
+  --font-brand: "Playfair Display", Georgia, serif;
+  --font-plain: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-ui: "Inter", var(--font-plain);
+  --font-home: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "IBM Plex Mono", "Source Code Pro", ui-monospace, SFMono-Regular,
+    Menlo, monospace;
+
+  /* Type scale */
+  --scale-01: 10px;
+  --scale-02: 12px;
+  --scale-03: 14px;
+  --scale-04: 16px;
+  --scale-05: 18px;
+  --scale-06: 24px;
+  --scale-07: 28px;
+  --scale-08: 32px;
+  --scale-09: 36px;
+  --scale-10: 44px;
+  --scale-11: 56px;
+  --scale-12: 72px;
+
+  /* Type weights */
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Spacing scale */
+  --space-none: 0px;
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-small: 8px;
+  --space-medium: 12px;
+  --space-large: 16px;
+  --space-large-increased: 24px;
+  --space-extra-large: 32px;
+  --space-extra-large-increased: 48px;
+  --space-extra-extra-increased: 64px;
+  --space-extra-extra-increased-2: 72px;
+  --space-2xl: 96px;
+  --space-super-large: 128px;
+  --space-3xl: 160px;
+
+  /* Corner radius */
+  --corner-xs: 4px;
+  --corner-small: 8px;
+  --corner-medium: 12px;
+  --corner-large: 16px;
+  --corner-xl: 24px;
+  --corner-full: 1000px;
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 2px rgba(17, 19, 35, 0.04);
+  --shadow-soft: 0 2px 8px rgba(17, 19, 35, 0.06);
+  --shadow-medium: 0 4px 16px rgba(17, 19, 35, 0.08);
+  --shadow-elevated: 0 8px 32px rgba(17, 19, 35, 0.1);
+  --shadow-float: 0 16px 48px rgba(17, 19, 35, 0.12);
+  --shadow-inset: inset 0 1px 2px rgba(17, 19, 35, 0.06);
+
+  /* Borders */
+  --border-subtle: 1px solid rgba(31, 39, 83, 0.08);
+  --border-light: 1px solid rgba(31, 39, 83, 0.12);
+  --border-medium: 1px solid rgba(31, 39, 83, 0.2);
+  --border-strong: 1px solid var(--navy);
+  --border-dashed: 1px dashed rgba(31, 39, 83, 0.3);
+
+  /* Animation easings + durations */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 0.15s;
+  --duration-normal: 0.25s;
+  --duration-slow: 0.4s;
+  --duration-slower: 0.6s;
+
+  /* Z-index scale */
+  --z-base: 0;
+  --z-above: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+
+  /* Focus rings */
+  --focus-ring: 0 0 0 3px rgba(31, 39, 83, 0.15);
+  --focus-ring-accent: 0 0 0 3px rgba(201, 168, 87, 0.25);
+
+  /* Layout */
+  --content-max-width: 1200px;
+  --section-padding-y: 96px;
+  --section-padding-x: 48px;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --section-padding-y: 64px;
+    --section-padding-x: 32px;
+  }
+}
+@media (max-width: 640px) {
+  :root {
+    --section-padding-y: 48px;
+    --section-padding-x: 20px;
+  }
+}
