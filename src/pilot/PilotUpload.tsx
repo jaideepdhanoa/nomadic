@@ -487,8 +487,8 @@ export function PilotUpload(): JSX.Element {
               <div className="pilot-ladder-rung-tag">You are here · free</div>
               <div className="pilot-ladder-rung-title">Self-serve pilot</div>
               <ul>
-                <li>2–10 clips, one custom agent</li>
-                <li>Round 1 + Round 2 — within 48 hours</li>
+                <li>2–10 clips of one specific scenario</li>
+                <li>Two iteration rounds, results within 48 hours</li>
                 <li>7-day exploration window</li>
               </ul>
             </li>
@@ -502,12 +502,12 @@ export function PilotUpload(): JSX.Element {
               </ul>
             </li>
             <li className="pilot-ladder-rung">
-              <div className="pilot-ladder-rung-tag">From $167K ARR</div>
+              <div className="pilot-ladder-rung-tag">Custom · talk to us</div>
               <div className="pilot-ladder-rung-title">Annual contract</div>
               <ul>
-                <li>$1/min usage + custom-agent retainer</li>
-                <li>Monitoring SKU as applicable</li>
-                <li>$500K–$5M for deployed-fleet buyers</li>
+                <li>Production deployment on your fleet</li>
+                <li>Custom agents tailored to your scenarios</li>
+                <li>Pricing scoped to your data volume and use case</li>
               </ul>
             </li>
           </ol>
